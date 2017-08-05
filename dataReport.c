@@ -5,7 +5,9 @@
 #include <pthread.h>
 #include "dataReport.h"
 #include "dataHandle.h"
+#include "http.h"
 
+#define POSTURL "http://120.77.23.79"
 //全局变量初始化
 static void global_data_init()
 {
@@ -48,13 +50,33 @@ void *report_data_thread(void *param)
 {
 	global_data_init();
 	set_login_data();
+	DATA_INFO data_info;
+	data_info.type = STARTCAST;
+	strcpy(data_info.cast_info,"http://www.leto.psde/infos/drr.mp4");
+	data_info.cast_type = AIRPLAY;
+	cJSON *even_info = cJSON_CreateObject();
+	build_even_info(even_info, &data_info);
+	write_data_to_file(FILE_PATH, cJSON_Print(even_info));
+	
+	data_info.type = ENDCAST;
+	data_info.status = true;
+	data_info.cast_type = AIRPLAY;
+	cJSON *even_info1 = cJSON_CreateObject();
+	build_even_info(even_info1, &data_info);
+	write_data_to_file(FILE_PATH, cJSON_Print(even_info1));
+	
+	if(true==copy_file(FILE_PATH,REPORT_FILE_PATH))
+	{
+		clean_file(FILE_PATH);
+	}
 	reprot_data(REPORT_FILE_PATH);
-	while(true)
+	printf("report_data_thread return\n");
+	/*while(true)
 	{
 		printf("g_report_frequency=%d\n",g_report_frequency);
 		sleep(g_report_frequency);
 		reprot_data(REPORT_FILE_PATH);
-	}
+	}*/
 }
 
 void start_report_data_service()
@@ -71,8 +93,15 @@ int main(int argc,char *argv[])
 {
 	printf("main\n");
 	start_report_data_service();
-	sleep(600);
-	/*global_data_init();
+	sleep(10);
+	/*
+	char s[] = "hzztest1";
+	if(!http_post(POSTURL,s,strlen(s)))
+	{
+		printf("return false\n");
+		return false;
+	}
+	global_data_init();
 	unsigned long int len = get_content_length(REPORT_FILE_PATH);
 	
 	cJSON *login_logout_info = cJSON_CreateObject();

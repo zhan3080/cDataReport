@@ -132,6 +132,7 @@ static char *http_parse_result(const char*lpbuf)
 		return NULL;  
 	}  
 	strcpy(response,ptmp+4);  
+	printf("response:\n%s\n",response); 
 	return response;  
 }  
   
@@ -148,7 +149,7 @@ char * http_post(const char *url,const char *post_str,const int str_len){
 	char *response = NULL;  
   
 	if(!url || !post_str){  
-		printf("      failed!\n");  
+		printf("failed!\n");  
 		return NULL;  
 	}  
   
@@ -164,9 +165,8 @@ char * http_post(const char *url,const char *post_str,const int str_len){
 		return NULL;  
 	}  
 	   
-	//sprintf(lpbuf,HTTP_POST,file,host_addr,port,strlen(post_str),post_str);  
-	sprintf(lpbuf,HTTP_POST,file,host_addr,port,str_len,post_str); 
-  
+	sprintf(lpbuf,HTTP_POST,file,host_addr,port,strlen(post_str),post_str);  
+	//sprintf(lpbuf,HTTP_POST,file,host_addr,port,str_len,post_str); 
 	int send_data_len = http_tcpclient_send(socket_fd,lpbuf,strlen(lpbuf));
 	printf("发送数据:\nsend_data_len=%d\n",send_data_len);    
 	if(send_data_len < 0){  
@@ -182,7 +182,7 @@ char * http_post(const char *url,const char *post_str,const int str_len){
 	}  
   
 	http_tcpclient_close(socket_fd);  
-  
+	printf("receive:\n%s\n",lpbuf); 
 	return http_parse_result(lpbuf);  
 }  
   

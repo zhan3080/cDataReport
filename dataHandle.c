@@ -208,12 +208,12 @@ bool reprot_data(char *file)
 	printf("head_len=%d\n",head_len);
 	
 	char data[data_len];
-	char result[data_len+head_len+EXTENAL_LEN+1];
+	char result[data_len+head_len+EXTENAL_LEN];
 	read_data_from_file(file, data,data_len);
 	//printf("data=%s\n",data);
 	package_data(s1, data,result);
 	//printf("package_data result=%s\n",result);
-    if(!http_post(POSTURL,result,data_len+head_len+EXTENAL_LEN+1))
+    if(!http_post(POSTURL,result,data_len+head_len+EXTENAL_LEN))
 	{
 		printf("return false\n");
 		return false;
